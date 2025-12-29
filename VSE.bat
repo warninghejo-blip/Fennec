@@ -4,7 +4,14 @@ setlocal enabledelayedexpansion
 
 pushd "%~dp0"
 
+set "LOG_FILE=%~dp0deploy.log"
+>"%LOG_FILE%" echo ========================================
+>>"%LOG_FILE%" echo Deploy log started: %date% %time%
+>>"%LOG_FILE%" echo Script: %~f0
+>>"%LOG_FILE%" echo ========================================
+
 echo Script: %~f0
+echo Log: %LOG_FILE%
 
 echo ========================================
 echo   FENNEC SWAP - Deploy All (VSE)
@@ -68,13 +75,19 @@ REM Deploy Worker
 echo [1/2] Deploying Worker (fennec-api)...
 echo Command: wrangler deploy
 echo.
-call !WRANGLER_CMD! deploy
+>>"%LOG_FILE%" echo.
+>>"%LOG_FILE%" echo ========================================
+>>"%LOG_FILE%" echo [1/2] Worker deploy
+>>"%LOG_FILE%" echo Command: !WRANGLER_CMD! deploy
+>>"%LOG_FILE%" echo ========================================
+call !WRANGLER_CMD! deploy >>"%LOG_FILE%" 2>&1
 set WORKER_EXIT_CODE=%errorlevel%
 if !WORKER_EXIT_CODE! neq 0 (
     echo.
     echo [ERROR] Worker deploy failed!
     echo Exit code: !WORKER_EXIT_CODE!
     echo.
+    call :showlogtail
     pause
     goto :fail
 )
@@ -94,6 +107,9 @@ set "ROBO_EXIT_CODE=%errorlevel%"
 if !ROBO_EXIT_CODE! geq 8 (
     echo.
     echo [ERROR] Failed to prepare Pages upload directory (robocopy exit !ROBO_EXIT_CODE!).
+    >>"%LOG_FILE%" echo.
+    >>"%LOG_FILE%" echo [ERROR] robocopy failed with exit !ROBO_EXIT_CODE!
+    call :showlogtail
     pause
     goto :fail
 )
@@ -109,13 +125,19 @@ if !errorlevel! equ 0 (
 
 echo Command: wrangler pages deploy !PAGES_DIR! --project-name=fennec-swap !PAGES_EXTRA_FLAGS!
 echo.
-call !WRANGLER_CMD! pages deploy !PAGES_DIR! --project-name=fennec-swap !PAGES_EXTRA_FLAGS!
+>>"%LOG_FILE%" echo.
+>>"%LOG_FILE%" echo ========================================
+>>"%LOG_FILE%" echo [2/2] Pages deploy
+>>"%LOG_FILE%" echo Command: !WRANGLER_CMD! pages deploy !PAGES_DIR! --project-name=fennec-swap !PAGES_EXTRA_FLAGS!
+>>"%LOG_FILE%" echo ========================================
+call !WRANGLER_CMD! pages deploy !PAGES_DIR! --project-name=fennec-swap !PAGES_EXTRA_FLAGS! >>"%LOG_FILE%" 2>&1
 set PAGES_EXIT_CODE=%errorlevel%
 if !PAGES_EXIT_CODE! neq 0 (
     echo.
     echo [ERROR] Pages deploy failed!
     echo Exit code: !PAGES_EXIT_CODE!
     echo.
+    call :showlogtail
     pause
     goto :fail
 )
@@ -139,6 +161,17 @@ popd
 
 exit /b 0
 
+:showlogtail
+echo.
+echo ===== Last log lines (%LOG_FILE%) =====
+powershell -NoProfile -Command "if (Test-Path -LiteralPath \"%LOG_FILE%\") { Get-Content -Tail 120 -LiteralPath \"%LOG_FILE%\" } else { Write-Host 'Log not found' }"
+echo ===== End log =====
+exit /b 0
+
 :fail
+call :showlogtail
+echo.
+echo [FAIL] Script ended with error. See log: %LOG_FILE%
+pause
 popd
 exit /b 1
