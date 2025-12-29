@@ -98,7 +98,7 @@ if !errorlevel! equ 0 (
 
 echo Command: %WRANGLER_CMD% pages deploy !PAGES_DIR! --project-name=fennec-swap %PAGES_EXTRA_FLAGS%
 echo.
-call %WRANGLER_CMD% pages deploy !PAGES_DIR! --project-name=fennec-swap %PAGES_EXTRA_FLAGS%
+cmd /c "%WRANGLER_CMD% pages deploy !PAGES_DIR! --project-name=fennec-swap %PAGES_EXTRA_FLAGS%"
 if %errorlevel% neq 0 (
   echo.
   echo [ERROR] Pages deploy failed.

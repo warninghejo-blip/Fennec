@@ -9,9 +9,9 @@ pushd "%~dp0"
 
 echo Deploying Worker (fennec-api)...
 if exist "node_modules\.bin\wrangler.cmd" (
-    call "node_modules\.bin\wrangler.cmd" deploy
+    cmd /c "node_modules\.bin\wrangler.cmd deploy"
 ) else (
-    call wrangler deploy
+    cmd /c "wrangler deploy"
 )
 if %errorlevel% neq 0 (
     echo.

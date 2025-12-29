@@ -32,9 +32,9 @@ if %errorlevel% equ 0 (
 
 echo Deploying Pages (fennec-swap)...
 if exist "%WRANGLER_LOCAL%" (
-    call "%WRANGLER_LOCAL%" pages deploy %PAGES_DIR% --project-name=fennec-swap %PAGES_EXTRA_FLAGS%
+    cmd /c "%WRANGLER_LOCAL% pages deploy %PAGES_DIR% --project-name=fennec-swap %PAGES_EXTRA_FLAGS%"
 ) else (
-    call wrangler pages deploy %PAGES_DIR% --project-name=fennec-swap %PAGES_EXTRA_FLAGS%
+    cmd /c "wrangler pages deploy %PAGES_DIR% --project-name=fennec-swap %PAGES_EXTRA_FLAGS%"
 )
 if %errorlevel% neq 0 (
     echo.

@@ -80,7 +80,7 @@ echo.
 >>"%LOG_FILE%" echo [1/2] Worker deploy
 >>"%LOG_FILE%" echo Command: !WRANGLER_CMD! deploy
 >>"%LOG_FILE%" echo ========================================
-call !WRANGLER_CMD! deploy >>"%LOG_FILE%" 2>&1
+cmd /c "!WRANGLER_CMD! deploy" >>"%LOG_FILE%" 2>&1
 set WORKER_EXIT_CODE=%errorlevel%
 if !WORKER_EXIT_CODE! neq 0 (
     echo.
@@ -130,7 +130,7 @@ echo.
 >>"%LOG_FILE%" echo [2/2] Pages deploy
 >>"%LOG_FILE%" echo Command: !WRANGLER_CMD! pages deploy !PAGES_DIR! --project-name=fennec-swap !PAGES_EXTRA_FLAGS!
 >>"%LOG_FILE%" echo ========================================
-call !WRANGLER_CMD! pages deploy !PAGES_DIR! --project-name=fennec-swap !PAGES_EXTRA_FLAGS! >>"%LOG_FILE%" 2>&1
+cmd /c "!WRANGLER_CMD! pages deploy !PAGES_DIR! --project-name=fennec-swap !PAGES_EXTRA_FLAGS!" >>"%LOG_FILE%" 2>&1
 set PAGES_EXIT_CODE=%errorlevel%
 if !PAGES_EXIT_CODE! neq 0 (
     echo.
